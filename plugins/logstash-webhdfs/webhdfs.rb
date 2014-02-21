@@ -65,10 +65,11 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
   # Compress output. One of [false, 'snappy', 'gzip']
   config :compress, :validate => [false, "snappy", "gzip"], :default => false
 
-  # Set snappy chunksize. Only neccessary for stream format. Default to 32k. Max is 65536, @see http://code.google.com/p/snappy/source/browse/trunk/framing_format.txt
+  # Set snappy chunksize. Only neccessary for stream format. Defaults to 32k. Max is 65536
+  # @see http://code.google.com/p/snappy/source/browse/trunk/framing_format.txt
   config :snappy_bufsize, :validate => :number, :default => 32768
 
-  # Set snappy format. One of "stream", "file". Set to framing to be hive compatible.
+  # Set snappy format. One of "stream", "file". Set to stream to be hive compatible.
   config :snappy_format, :validate => ["stream", "file"], :default => "stream"
 
   # Remove @timestamp field. Hive does not like a leading "@", but we need @timestamp for path calculation.
