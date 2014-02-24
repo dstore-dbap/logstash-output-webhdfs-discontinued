@@ -85,13 +85,13 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
         begin
           require "zlib"
         rescue LoadError
-          @logger.error("Gzip compression selected but zlib gem could not be loaded.")
+          @logger.error("Gzip compression selected but zlib module could not be loaded.")
         end
       elsif @compress == "snappy"
         begin
           require "snappy"
         rescue LoadError
-          @logger.error("Snappy compression selected but snappy gem could not be loaded.")
+          @logger.error("Snappy compression selected but snappy module could not be loaded.")
         end
       end
       @files = {}
