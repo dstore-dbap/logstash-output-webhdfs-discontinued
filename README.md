@@ -49,5 +49,8 @@ Here is a rough plot:
     # Install dependencies
     USE_JRUBY=1 bin/logstash deps
 
+    # Run logstash
+    USE_JRUBY=1 bin/logstash agent -f /path/to/logstash/config -p /path/to/logstash-webhdfs/
+
 ## LICENSE
 * License: Apache License, Version 2.0
