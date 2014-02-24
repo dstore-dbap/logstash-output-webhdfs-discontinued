@@ -77,9 +77,6 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
 
   public
   def register
-      # Disable concurrent access to the same file. After some experiments, webhdfs sometimes corrupts files when
-      # multiple clients want to append to the same file.
-      #workers_not_supported
       require 'webhdfs'
       if @compress == "gzip"
         begin
@@ -166,7 +163,7 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
       elsif @compress == "snappy"
         path += ".snappy"
         if @snappy_format == "file"
-          output = compress_snappy_file(output) #compress_snappy('{"message":"dbap-bmg"}'+newline+'{"message":"dbap-bmg"}'+newline)
+          output = compress_snappy_file(output)
         elsif
           output = compress_snappy_stream(output)
         end
