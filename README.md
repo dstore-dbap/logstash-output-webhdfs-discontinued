@@ -20,7 +20,7 @@ Example configuration:
 
 For a complete list of options, see config section in source code.
 
-This plugin has a dependencies on:
+This plugin has dependencies on:
 * webhdfs module @<https://github.com/kzk/webhdfs>
 * snappy module @<https://github.com/miyucy/snappy>
 
