@@ -1,7 +1,9 @@
 logstash-webhdfs
 ================
 
-A logstash plugin to store events via webhdfs.
+A logstash plugin to store events via webhdfs. 
+
+Tested with v1.3.3 and v1.4.0.
 
 Example configuration:
 
