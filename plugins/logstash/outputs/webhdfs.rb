@@ -7,10 +7,10 @@ require "stud/buffer"
 #
 # Write events to files in HDFS via webhdfs restapi. You can use fields from the
 # event as parts of the filename.
-class LogStash::Outputs::HadoopWebHdfs < LogStash::Outputs::Base
+class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
   include Stud::Buffer
 
-  config_name "hadoop_webhdfs"
+  config_name "webhdfs"
   milestone 1
 
   if RUBY_VERSION[0..2] == '1.8'
