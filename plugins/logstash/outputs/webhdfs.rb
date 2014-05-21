@@ -2,7 +2,7 @@
 # Author: Bjoern Puttmann <b.puttmann@dbap.de>
 # Date: 2014-05-21
 #
-# Copyright 2014 dbap Gmbh.
+# Copyright 2014 dbap GmbH.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ require "stud/buffer"
 # This is an example of logstash config:
 #
 # webhdfs {
-#   server => "172.16.1.251:50070"      (required)
+#   server => "127.0.0.1:50070"         (required)
 #   path => "/user/logstash/dt=%{+YYYY-MM-dd}/logstash-%{+HH}.log"  (required)
 #   user => "hue"                       (optional)
 #   message_format => "%{@source_host}" (optional)
