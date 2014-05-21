@@ -1,12 +1,13 @@
-require "plugins/namespace"
-require "plugins/outputs/base"
+# encoding: utf-8
+require "logstash/namespace"
+require "logstash/outputs/base"
 require "stud/buffer"
 
 # WebHdfs output
 #
 # Write events to files in HDFS via webhdfs restapi. You can use fields from the
 # event as parts of the filename.
-class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
+class LogStash::Outputs::HadoopWebHdfs < LogStash::Outputs::Base
   include Stud::Buffer
 
   config_name "hadoop_webhdfs"
@@ -24,7 +25,7 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
   config :server, :validate => :string, :required => true
 
   # The Username for webhdfs.
-  config :user, :validate => :string, :required => true
+  config :user, :validate => :string, :required => false
 
   # The path to the file to write. Event fields can be used here,
   # like "/var/log/plugins/%{@source_host}/%{application}"
@@ -76,30 +77,40 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
   config :remove_at_timestamp, :validate => :boolean, :default => true
 
   public
+
   def register
+    begin
       require 'webhdfs'
-      if @compress == "gzip"
-        begin
-          require "zlib"
-        rescue LoadError
-          @logger.error("Gzip compression selected but zlib module could not be loaded.")
-        end
-      elsif @compress == "snappy"
-        begin
-          require "snappy"
-        rescue LoadError
-          @logger.error("Snappy compression selected but snappy module could not be loaded.")
-        end
+    rescue LoadError
+      @logger.error("Module webhdfs could not be loaded.")
+    end
+    if @compress == "gzip"
+      begin
+        require "zlib"
+      rescue LoadError
+        @logger.error("Gzip compression selected but zlib module could not be loaded.")
       end
-      @files = {}
-      @host, @port = @server.split(':')
-      @client = prepare_client(@host, @port, @user)
-      namenode_available(@client)
-      buffer_initialize(
-          :max_items => @flush_size,
-          :max_interval => @idle_flush_time,
-          :logger => @logger
-      )
+    elsif @compress == "snappy"
+      begin
+        require "snappy"
+      rescue LoadError
+        @logger.error("Snappy compression selected but snappy module could not be loaded.")
+      end
+    end
+    @files = {}
+    @host, @port = @server.split(':')
+    @client = prepare_client(@host, @port, @user)
+    # Test client connection.
+    begin
+      @client.list('/')
+    rescue => e
+      @logger.error("Webhdfs check request failed. (namenode: #{@client.host}:#{@client.port}, Exception: #{e.message})")
+    end
+    buffer_initialize(
+    :max_items => @flush_size,
+    :max_interval => @idle_flush_time,
+    :logger => @logger
+    )
   end # def register
 
   public
@@ -121,21 +132,6 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
       client.retry_times = @retry_times if @retry_times
     end
     client
-  end
-
-  def namenode_available(client)
-    if client
-      available = true
-      begin
-        client.list('/')
-      rescue => e
-        @logger.error("Webhdfs check request failed. (namenode: #{client.host}:#{client.port}, Exception: #{e.message})")
-        available = false
-      end
-      available
-    else
-      false
-    end
   end
 
   def flush(events=nil, teardown=false)
@@ -165,7 +161,7 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
         if @snappy_format == "file"
           output = compress_snappy_file(output)
         elsif
-          output = compress_snappy_stream(output)
+        output = compress_snappy_stream(output)
         end
       end
       write_tries = 0
@@ -178,14 +174,13 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
           # Retry max_retry times. This can solve problems like leases being hold by another process. Sadly this is no
           # KNOWN_ERROR in rubys webhdfs client.
           if write_tries < @retry_times
-            if write_tries > 2
-              @logger.warn("Retrying webhdfs write for multiple times. Maybe you should increase retry_interval or reduce number of workers.")
-            end
+            @logger.warn("Retrying webhdfs write for multiple times. Maybe you should increase retry_interval or reduce number of workers.")
             sleep(@retry_interval * write_tries)
             next
+          else
+            # Issue error after max retries.
+            @logger.error("Max write retries reached. Exception: #{e.message}")
           end
-          # Issue error after max retries.
-          @logger.error("Max write retries reached. Exception: #{e.message}")
         end
       end
     end
