@@ -8,7 +8,7 @@ Tested with v1.3.3 and v1.4.0.
 Example configuration:
 
     output {
-        hadoop_webhdfs {
+        webhdfs {
             workers => 2
             server => "your.nameno.de:14000"
             user => "flume"
