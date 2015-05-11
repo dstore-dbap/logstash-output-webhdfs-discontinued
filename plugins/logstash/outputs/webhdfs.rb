@@ -24,7 +24,7 @@ require "stud/buffer"
 #
 # This plugin only has a mandatory dependency on the webhdfs gem from 
 # Tagamori Satoshi (@see: https://github.com/kzk/webhdfs).
-# Optional dependencies are the zlib and snappy gems. 
+# Optional dependencies are zlib and snappy gem. 
 # No jars from hadoop are needed, thus reducing configuration and compatibility
 # problems.
 #
@@ -105,7 +105,7 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
   config :retry_times, :validate => :number, :default => 5
 
   # Compress output. One of [false, 'snappy', 'gzip']
-  config :compress, :validate => [false, "snappy", "gzip"], :default => false
+  config :compress, :validate => ["false", "snappy", "gzip"], :default => "false"
 
   # Set snappy chunksize. Only neccessary for stream format. Defaults to 32k. Max is 65536
   # @see http://code.google.com/p/snappy/source/browse/trunk/framing_format.txt
