@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
 
   s.name            = 'logstash-output-webhdfs'
-  s.version         = '0.1.1'
+  s.version         = '0.0.1'
   s.licenses        = ['Apache License (2.0)']
-  s.summary         = "Plugin to write events to hdfs via http/s."
+  s.summary         = "Plugin to write events to hdfs via webhdfs."
   s.description     = "This gem is a logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/plugin install gemname. This gem is not a stand-alone program"
   s.authors         = ["Björn Puttmann, loshkovskyi"]
   s.email           = 'b.puttmann@dbap.de'
@@ -23,7 +23,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'logstash-core', '>= 1.4.0', '< 2.0.0'
   s.add_runtime_dependency 'webhdfs'
   s.add_runtime_dependency 'snappy'
-  s.add_runtime_dependency 'zlib'
   s.add_development_dependency 'logstash-devutils'
-  s.add_development_dependency 'logstash-codec-plain'
 end
