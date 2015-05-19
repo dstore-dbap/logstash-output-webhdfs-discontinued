@@ -7,7 +7,7 @@ require "stud/buffer"
 # restapi.  
 #
 # This plugin only has a mandatory dependency on the webhdfs gem from 
-# Tagamori Satoshi (@see: https://github.com/kzk/webhdfs).
+# Kazuki Ohta (@see: https://github.com/kzk/webhdfs).
 # Optional dependencies are zlib and snappy gem. 
 # No jars from hadoop are needed, thus reducing configuration and compatibility
 # problems.
