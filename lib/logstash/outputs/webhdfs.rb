@@ -1,20 +1,4 @@
 # encoding: utf-8
-# Author: Bjoern Puttmann <b.puttmann@dbap.de>
-# Date: 2014-05-21
-#
-# Copyright 2014 dbap GmbH.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 require "logstash/namespace"
 require "logstash/outputs/base"
 require "stud/buffer"
@@ -31,21 +15,26 @@ require "stud/buffer"
 # USAGE:
 # This is an example of logstash config:
 #
+# [source,ruby]
+# ----------------------------------
 # webhdfs {
-#   server => "127.0.0.1:50070"         (required)
-#   path => "/user/logstash/dt=%{+YYYY-MM-dd}/logstash-%{+HH}.log"  (required)
-#   user => "hue"                       (optional)
-#   message_format => "%{@source_host}" (optional)
-#   idle_flush_time => 10               (optional)
-#   flush_size => 50                    (optional)
-#   open_timeout => 15                  (optional)
-#   read_timeout => 15                  (optional)
-#   use_httpfs => true                  (optional)
-#   retry_interval => 1                 (optional)
-#   retry_times => 3                    (optional)
-#   compress => "snappy"                (optional)
-#   remove_at_timestamp => false        (optional)
+#   server => "127.0.0.1:50070"         # (required)
+#   path => "/user/logstash/dt=%{+YYYY-MM-dd}/logstash-%{+HH}.log"  # (required)
+#   user => "hue"                       # (optional)
+#   message_format => "%{@source_host}" # (optional)
+#   idle_flush_time => 10               # (optional)
+#   flush_size => 50                    # (optional)
+#   open_timeout => 15                  # (optional)
+#   read_timeout => 15                  # (optional)
+#   use_httpfs => true                  # (optional)
+#   retry_interval => 1                 # (optional)
+#   retry_times => 3                    # (optional)
+#   compress => "snappy"                # (optional)
+#   remove_at_timestamp => false        # (optional)
 # }
+# ----------------------------------
+#
+# Author: Bjoern Puttmann <b.puttmann@dbap.de> - dbap GmbH, Münster, Germany.
 
 class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
   include Stud::Buffer
@@ -69,7 +58,9 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
 
   # The path to the file to write to. Event fields can be used here,
   # as well as date fields in the joda time format, e.g.:
-  # "/user/logstash/dt=%{+YYYY-MM-dd}/%{@source_host}-%{+HH}.log"
+  # ....
+  #     "/user/logstash/dt=%{+YYYY-MM-dd}/%{@source_host}-%{+HH}.log"
+  # ....
   config :path, :validate => :string, :required => true
 
   # The format to use when writing events to the file. This value
