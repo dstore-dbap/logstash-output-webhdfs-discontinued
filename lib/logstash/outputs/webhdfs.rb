@@ -12,6 +12,13 @@ require "stud/buffer"
 # No jars from hadoop are needed, thus reducing configuration and compatibility
 # problems.
 #
+# If you get an error like:
+#
+#     Max write retries reached. Exception: initialize: name or service not known {:level=>:error}
+#
+# make sure, that the hostname of your namenode is resolvable on the host running logstash. When creating/appending
+# to a file, webhdfs somtime sends a 307 TEMPORARY_REDIRECT with the HOSTNAME of the machine its running on.
+#
 # USAGE:
 # This is an example of logstash config:
 #
@@ -95,8 +102,8 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
   # How many times should we retry.
   config :retry_times, :validate => :number, :default => 5
 
-  # Compress output. One of [false, 'snappy', 'gzip']
-  config :compress, :validate => ["false", "snappy", "gzip"], :default => "false"
+  # Compress output. One of ['none', 'snappy', 'gzip']
+  config :compression, :validate => ["none", "snappy", "gzip"], :default => "none"
 
   # Set snappy chunksize. Only neccessary for stream format. Defaults to 32k. Max is 65536
   # @see http://code.google.com/p/snappy/source/browse/trunk/framing_format.txt
@@ -116,13 +123,13 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
     rescue LoadError
       @logger.error("Module webhdfs could not be loaded.")
     end
-    if @compress == "gzip"
+    if @compression == "gzip"
       begin
         require "zlib"
       rescue LoadError
         @logger.error("Gzip compression selected but zlib module could not be loaded.")
       end
-    elsif @compress == "snappy"
+    elsif @compression == "snappy"
       begin
         require "snappy"
       rescue LoadError
@@ -185,15 +192,15 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
       output_files[path] << event_as_string
     end
     output_files.each do |path, output|
-      if @compress == "gzip"
+      if @compression == "gzip"
         path += ".gz"
         output = compress_gzip(output)
-      elsif @compress == "snappy"
+      elsif @compression == "snappy"
         path += ".snappy"
         if @snappy_format == "file"
           output = compress_snappy_file(output)
         elsif
-        output = compress_snappy_stream(output)
+          output = compress_snappy_stream(output)
         end
       end
       write_tries = 0
@@ -234,7 +241,7 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
     data= data.encode(Encoding::ASCII_8BIT, "binary", :undef => :replace)
     buffer = StringIO.new('', 'w')
     buffer.set_encoding Encoding::ASCII_8BIT unless RUBY_VERSION =~ /^1\.8/
-    compressed = Snappy.deflate(chunk)
+    compressed = Snappy.deflate(data)
     buffer << [compressed.size, compressed].pack("Na*")
     buffer.string
   end
@@ -261,7 +268,7 @@ class LogStash::Outputs::WebHdfs < LogStash::Outputs::Base
       @client.append(path, data)
     rescue WebHDFS::FileNotFoundError
       # Add snappy header if format is "file".
-      if @snappy_format == "file"
+      if @compression == "snappy" and @snappy_format == "file"
         @client.create(path, get_snappy_header! + data)
       elsif
         @client.create(path, data)
