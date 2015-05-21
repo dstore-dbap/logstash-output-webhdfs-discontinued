@@ -28,7 +28,7 @@ Example configuration:
             user => "flume"
             path => "/user/flume/logstash/dt=%{+Y}-%{+M}-%{+d}/logstash-%{+H}.log"
             flush_size => 500
-            compress => "snappy"
+            compression => "snappy"
             idle_flush_time => 10
             retry_interval => 0.5
         }
