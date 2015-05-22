@@ -6,7 +6,7 @@ require 'json'
 
 describe 'outputs/webhdfs' do
 
-  webhdfs_server = '172.16.1.225'
+  webhdfs_server = 'localhost'
   webhdfs_port = 50070
   webhdfs_user = 'hadoop'
   path_to_testlog = '/user/hadoop/test.log'
