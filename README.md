@@ -1,3 +1,5 @@
+**This repository is discontinued. The plugin can now be found in the logstash repository @https://github.com/logstash-plugins/logstash-output-webhdfs**
+
 logstash-webhdfs
 ================
 
