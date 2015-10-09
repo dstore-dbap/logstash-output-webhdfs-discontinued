@@ -26,7 +26,8 @@ Example configuration:
     output {
         webhdfs {
             workers => 2
-            server => "your.nameno.de:14000"
+            host => "your.nameno.de"
+            port => 14000
             user => "flume"
             path => "/user/flume/logstash/dt=%{+Y}-%{+M}-%{+d}/logstash-%{+H}.log"
             flush_size => 500
